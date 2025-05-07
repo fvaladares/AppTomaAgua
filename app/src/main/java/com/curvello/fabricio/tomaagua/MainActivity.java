@@ -1,8 +1,7 @@
 package com.curvello.fabricio.tomaagua;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.TimePickerDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.icu.util.Calendar;
 import android.os.Bundle;
@@ -13,20 +12,18 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    TextView tvRelogio;
-    EditText etMensagem;
-    Button btCriarAlarme;
-    TimePickerDialog timePickerDialog;
-    Calendar calendar;
+    private TextView tvRelogio;
+    private EditText etMensagem;
+    private Button btCriarAlarme;
 
-    int hora;
-    int minuto;
-    String mensagem;
+    private int hora;
+    private int minuto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,21 +41,20 @@ public class MainActivity extends AppCompatActivity {
 
     //Aciona a View timePickerDialog para que o usuário defina a hora do alarme
     public void definirHoraAlarme(View view) {
-        calendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
         hora = calendar.get(Calendar.HOUR_OF_DAY);
         minuto = calendar.get(Calendar.MINUTE);
 
-        timePickerDialog = new TimePickerDialog(MainActivity.this,
-                new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker timePicker, int horaDoDia, int minutos) {
-                String h = String.format("%02d", horaDoDia);
-                String m = String.format("%02d", minutos);
-                hora = Integer.parseInt(h);
-                minuto = Integer.parseInt(m);
-                tvRelogio.setText(h + ":" + m);
-            }
-        }, hora, minuto, true);
+        TimePickerDialog timePickerDialog = new TimePickerDialog(MainActivity.this,
+                (timePicker, horaDoDia, minutos) -> {
+                    String h = getString(R.string.numero_dois_digitos, horaDoDia);
+                    String m = getString(R.string.numero_dois_digitos, minutos);
+                    hora = Integer.parseInt(h);
+                    minuto = Integer.parseInt(m);
+                    tvRelogio.setText(getString(R.string.hora_doispontos_minutos,
+                            h,
+                            m));
+                }, hora, minuto, true);
         timePickerDialog.show();
     }
 
@@ -73,13 +69,14 @@ public class MainActivity extends AppCompatActivity {
     */
 
 
-    public void criarAlarme( View view ) {
+    public void criarAlarme(View view) {
         minimizaTeclado(btCriarAlarme);
 
-        if(!etMensagem.getText().toString().isEmpty()) {
+        String mensagem;
+        if (!etMensagem.getText().toString().isEmpty()) {
             mensagem = etMensagem.getText().toString();
         } else {
-            mensagem = "!!! TOMA ÁGUA !!!";
+            mensagem = getString(R.string.toma_agua);
         }
 
         Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM);
@@ -87,16 +84,16 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(AlarmClock.EXTRA_MINUTES, minuto);
         intent.putExtra(AlarmClock.EXTRA_MESSAGE, mensagem);
 
-        //Validação se existe app de alarme no celular
-        if (intent.resolveActivity(getPackageManager()) != null) {
+        try {
             startActivity(intent);
-        } else {
-            Toast.makeText(MainActivity.this, "Não existe app de alarme neste aparelho de celular", Toast.LENGTH_SHORT).show();
+        } catch (ActivityNotFoundException activityNotFoundException) {
+            Toast.makeText(MainActivity.this,
+                    getString(R.string.app_nao_existe),
+                    Toast.LENGTH_SHORT).show();
         }
-
     }
 
-    public void minimizaTeclado(Button button){
+    public void minimizaTeclado(Button button) {
         InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(button.getWindowToken(), 0);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);

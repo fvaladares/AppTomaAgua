@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Toma Agua</string>
+    <string name="toma_agua">"!!! TOMA ÁGUA !!!"</string>
+    <string name="app_nao_existe">"Não existe app de alarme neste aparelho de celular"</string>
+    <string name="hora_doispontos_minutos">%1$s:%2$s</string>
+    <string name="numero_dois_digitos">%1$02d</string>
+    <string name="insira_a_mensagem_do_alarme">Insira a mensagem do alarme</string>
+    <string name="criar_alarme">Criar Alarme</string>
+    <string name="_00_00">00:00</string>
+    <string name="selecione_a_hora_desejada">Selecione a hora desejada</string>
+    <string name="toma_gua">!!!Toma Água!!!</string>
+    <string name="crie_seu_alarme_para_n_o_esquecer_de_tomar_gua">Crie seu alarme para não esquecer de tomar água</string>
 </resources>
